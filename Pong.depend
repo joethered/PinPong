@@ -1,0 +1,43 @@
+# depslib dependency file v1.0
+1437443020 source:c:\users\joeth_000\desktop\cmpm 170 summer\pong\main.cpp
+	<SFML/Audio.hpp>
+	<SFML/Graphics.hpp>
+	"GamePolygon.h"
+	"paddle.h"
+	"Ball.h"
+	"Bumber.h"
+	<cmath>
+	<iostream>
+
+1437385958 c:\users\joeth_000\desktop\cmpm 170 summer\pong\include\paddle.h
+	"GamePolygon.h"
+	<SFML/Graphics.hpp>
+
+1437406378 source:c:\users\joeth_000\desktop\cmpm 170 summer\pong\src\gamepolygon.cpp
+	"GamePolygon.h"
+	<cmath>
+	<iostream>
+
+1437380884 c:\users\joeth_000\desktop\cmpm 170 summer\pong\include\gamepolygon.h
+	<SFML/Graphics.hpp>
+	<memory>
+	<vector>
+
+1437385958 source:c:\users\joeth_000\desktop\cmpm 170 summer\pong\src\paddle.cpp
+	"paddle.h"
+
+1437380544 c:\users\joeth_000\desktop\cmpm 170 summer\pong\include\ball.h
+	<SFML/Graphics.hpp>
+	"GamePolygon.h"
+
+1437407844 source:c:\users\joeth_000\desktop\cmpm 170 summer\pong\src\ball.cpp
+	"Ball.h"
+	<cmath>
+	<iostream>
+
+1437408109 source:c:\users\joeth_000\desktop\cmpm 170 summer\pong\src\bumber.cpp
+	"Bumber.h"
+
+1437405309 c:\users\joeth_000\desktop\cmpm 170 summer\pong\include\bumber.h
+	"GamePolygon.h"
+
