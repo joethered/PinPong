@@ -1,4 +1,4 @@
-#include <SFML/Audio.hpp>
+//#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include "GamePolygon.h"
 #include "paddle.h"
@@ -21,7 +21,7 @@ int main()
    settings.antialiasingLevel = 8;
 
    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH,SCREEN_HEIGHT), "Pin Pong", sf::Style::Default, settings);
-
+   window.setFramerateLimit(60);
 
    // Create a graphical text to display
    sf::Font font;
@@ -49,7 +49,9 @@ int main()
 
 
    Ball ball;
-   float startSpeed = 1;
+   float gameSpeed = 8;
+
+   float startSpeed = gameSpeed;
    ball.setRadius(10);
    ball.setFillColor(sf::Color(200, 200, 200));
    ball.setVelocity(180, startSpeed);
@@ -61,13 +63,13 @@ int main()
    vector<sf::Vector2f> vertices;
 
    vertices.push_back(sf::Vector2f(0, SCREEN_HEIGHT));
-   vertices.push_back(sf::Vector2f(0, SCREEN_HEIGHT - 10));
-   vertices.push_back(sf::Vector2f(SCREEN_WIDTH, SCREEN_HEIGHT - 10));
+   vertices.push_back(sf::Vector2f(0, SCREEN_HEIGHT - 20));
+   vertices.push_back(sf::Vector2f(SCREEN_WIDTH, SCREEN_HEIGHT - 20));
    vertices.push_back(sf::Vector2f(SCREEN_WIDTH, SCREEN_HEIGHT));
    walls.push_back(GamePolygon(4, vertices));
 
    walls[0].setFillColor(sf::Color(240, 240, 240));
-   walls[0].setPosition(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 10);
+   walls[0].setPosition(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 20);
 
 
    walls.push_back(GamePolygon(4, vertices));
@@ -98,7 +100,7 @@ int main()
 
 
    //Sound Initialization
-   sf::SoundBuffer paddle1_bfr;
+   /*sf::SoundBuffer paddle1_bfr;
    if (!paddle1_bfr.loadFromFile("paddle1.wav")){
       cout << "Error: could not load 'paddle1.wav'" << endl;
    }
@@ -106,7 +108,7 @@ int main()
    paddle1_sfx.setBuffer(paddle1_bfr);
 
 
-   /*sf::SoundBuffer paddle2_bfr;
+   sf::SoundBuffer paddle2_bfr;
    if (!paddle2_bfr.loadFromFile("paddle2.wav")){
       cout << "Error: could not load 'paddle2.wav'" << endl;
    }
@@ -133,7 +135,10 @@ int main()
 
    int p1Score = 0;
    int p2Score = 0;
-   int ballCount = 15;
+   int ballCount = 30;
+
+   bool pause = true;
+   bool spacePressed = false;
 
    sf::Clock clock;
 
@@ -142,6 +147,7 @@ int main()
    // Start the game loop
    while (window.isOpen())
    {
+
       window.clear();
       // Process events
       sf::Event event;
@@ -160,14 +166,27 @@ int main()
 
       float dt_mil = dt.asMicroseconds() * .005;
 
+      if (pause){
+         dt_mil = 0;
+      }
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){
+         if (!spacePressed){
+            pause = !pause;
+         }
+         spacePressed = true;
+      }else{
+         spacePressed = false;
+      }
+
 
       //Player 1
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
-         player1.move(0, -1 * dt_mil);
+         player1.move(0, -1 * gameSpeed * dt_mil);
       }
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
-         player1.move(0, 1 * dt_mil);
+         player1.move(0, gameSpeed * dt_mil);
       }
 
       if (player1.getMainShape().rotating){
@@ -179,7 +198,7 @@ int main()
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)){
          if (!wPressed){
             if (player1.rot){
-               paddle1_sfx.play();
+               //paddle1_sfx.play();
                player1.setRotation(-30);
                player1.rot = false;
             }else{
@@ -198,11 +217,11 @@ int main()
 
       //Player 2
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
-         player2.move(0, -1 * dt_mil);
+         player2.move(0, -1 * gameSpeed * dt_mil);
       }
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
-         player2.move(0, dt_mil);
+         player2.move(0, gameSpeed * dt_mil);
       }
 
       if (player2.getMainShape().rotating){
@@ -214,7 +233,7 @@ int main()
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
          if (!commaPressed){
             if (player2.rot){
-               paddle1_sfx.play();
+               //paddle1_sfx.play();
                player2.setRotation(-30);
                player2.rot = false;
             }else{
@@ -245,7 +264,7 @@ int main()
          sf::Vector2f transVec = r.minIntervalDistance * r.translationAxis;
          ball.move(transVec);
          if (player1.isRotating()){
-            speed *= 2;
+            speed *= 1.5;
          }
          ball.setVelocity(r.reflection, speed);
          ball.setOwner(-1);
@@ -258,7 +277,7 @@ int main()
          sf::Vector2f transVec = r.minIntervalDistance * r.translationAxis;
          ball.move(transVec);
          if (player2.isRotating()){
-            speed *= 2;
+            speed *= 1.5;
          }
          ball.setVelocity(r.reflection, speed);
          ball.setOwner(1);
@@ -280,7 +299,7 @@ int main()
          r = ball.checkCollision(bumpers[i].getShape());
          if (r.intersect){
             bumpers[i].startAnimation();
-            float speed = startSpeed * 2;
+            float speed = startSpeed * 1.5;
             sf::Vector2f transVec = r.minIntervalDistance * r.translationAxis;
             ball.move(transVec);
             ball.setVelocity(r.reflection, speed);
