@@ -72,6 +72,10 @@ void Paddle::setPosition(float x, float y){
    pivot.setPosition(x,y);
 }
 
+sf::Vector2f Paddle::getPos(){
+   return getPosition();
+}
+
 void Paddle::setRotation(float theta){
    mainShape.setRotation(theta);
    mainShape.rotating = true;

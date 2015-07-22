@@ -15,13 +15,14 @@ int main()
 {
    const int SCREEN_WIDTH = 1280;
    const int SCREEN_HEIGHT = 720;
-
+   const float gameSpeed = 8;
 
    sf::ContextSettings settings;
    settings.antialiasingLevel = 8;
 
    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH,SCREEN_HEIGHT), "Pin Pong", sf::Style::Default, settings);
-   window.setFramerateLimit(60);
+   window.setFramerateLimit(15);
+   //window.setVerticalSyncEnabled(true);
 
    // Create a graphical text to display
    sf::Font font;
@@ -37,6 +38,9 @@ int main()
    ballCount_txt.setOrigin(50,0);
    ballCount_txt.setPosition(SCREEN_WIDTH / 2, 0);
 
+   sf::Text frame_rate_txt("0", font, 36);
+   frame_rate_txt.setPosition(SCREEN_WIDTH / 4, 0);
+
 
    Paddle player1{};
    player1.setColor(sf::Color(50,120,255));
@@ -49,7 +53,7 @@ int main()
 
 
    Ball ball;
-   float gameSpeed = 8;
+
 
    float startSpeed = gameSpeed;
    ball.setRadius(10);
@@ -163,8 +167,12 @@ int main()
       }
 
       sf::Time dt = clock.getElapsedTime();
+      frame_rate_txt.setString(to_string(1 / (dt.asSeconds() * 100)) + "\n" +\
+                               to_string(dt.asMilliseconds()) + "\n" +\
+                               to_string(dt.asMicroseconds()));
+      window.draw(frame_rate_txt);
 
-      float dt_mil = dt.asMicroseconds() * .005;
+      float dt_mil = dt.asSeconds() * 100;
 
       if (pause){
          dt_mil = 0;
@@ -216,11 +224,11 @@ int main()
 
 
       //Player 2
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
+      if (player2.getPos().y > 130 && sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
          player2.move(0, -1 * gameSpeed * dt_mil);
       }
 
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
+      if (player2.getPos().y < SCREEN_HEIGHT - 130 && sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
          player2.move(0, gameSpeed * dt_mil);
       }
 
@@ -261,7 +269,7 @@ int main()
 
       if (r.intersect){
          float speed = magnitude(ball.getVelocity());
-         sf::Vector2f transVec = r.minIntervalDistance * r.translationAxis;
+         sf::Vector2f transVec = (r.minIntervalDistance + ball.getRadius()) * r.translationAxis;
          ball.move(transVec);
          if (player1.isRotating()){
             speed *= 1.5;
@@ -274,7 +282,7 @@ int main()
 
       if (r.intersect){
          float speed = magnitude(ball.getVelocity());
-         sf::Vector2f transVec = r.minIntervalDistance * r.translationAxis;
+         sf::Vector2f transVec = (r.minIntervalDistance + ball.getRadius()) * r.translationAxis;
          ball.move(transVec);
          if (player2.isRotating()){
             speed *= 1.5;
@@ -287,7 +295,7 @@ int main()
          r = ball.checkCollision(walls[i]);
          if (r.intersect){
             float speed = magnitude(ball.getVelocity());
-            sf::Vector2f transVec = r.minIntervalDistance * r.translationAxis;
+            sf::Vector2f transVec = (r.minIntervalDistance + ball.getRadius()) * r.translationAxis;
             ball.move(transVec);
             ball.setVelocity(r.reflection, speed * 0.95);
          }
@@ -300,7 +308,7 @@ int main()
          if (r.intersect){
             bumpers[i].startAnimation();
             float speed = startSpeed * 1.5;
-            sf::Vector2f transVec = r.minIntervalDistance * r.translationAxis;
+            sf::Vector2f transVec = (r.minIntervalDistance + ball.getRadius()) * r.translationAxis;
             ball.move(transVec);
             ball.setVelocity(r.reflection, speed);
             if (ball.getOwner() < 0){
